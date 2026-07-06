@@ -1,0 +1,29 @@
+<%- include('../partials/header') %>
+
+<div class="content-header">
+  <h1><i class="fa-solid fa-chart-line"></i> Admin Dashboard</h1>
+</div>
+
+<div class="dashboard-grid">
+
+  <a href="/admin/menu" class="dashboard-card">
+    <i class="fa-solid fa-utensils"></i>
+    <h3>Menu Management</h3>
+    <p>View, edit and manage menu items.</p>
+  </a>
+
+  <div class="dashboard-card">
+    <i class="fa-solid fa-sack-dollar"></i>
+    <h3>Today's Revenue</h3>
+    <h2>₹<%= totalRevenue %></h2>
+  </div>
+
+  <div class="dashboard-card">
+    <i class="fa-solid fa-chart-column"></i>
+    <h3>Reports</h3>
+    <p>Coming Soon</p>
+  </div>
+
+</div>
+
+<%- include('../partials/footer') %>

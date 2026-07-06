@@ -59,7 +59,10 @@ const orderSchema = new mongoose.Schema({
   status: {
     type: String,
     default: "pending"
-  }
+  },
+  paidAt: {
+    type: Date
+  },
 }, {
   timestamps: true
 });

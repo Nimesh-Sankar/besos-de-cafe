@@ -28,6 +28,7 @@ export async function payOrder(req, res) {
     }
 
     order.status = "paid";
+    order.paidAt = new Date();
     await order.save();
 
     res.redirect("/cashier/orders");

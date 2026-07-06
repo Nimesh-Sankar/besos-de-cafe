@@ -148,17 +148,23 @@
         <div class="invoice-divider"></div>
 
         <div class="invoice-totals">
-          <div class="inv-total-line">
-            <span>Subtotal</span>
-            <span>₹${order.totalAmount}</span>
-          </div>
-          <div class="inv-total-line">
-  <span>Service Charge</span>
-  <span>₹5</span>
-</div>
-<div class="inv-total-line grand-total">
-  <span>Grand Total</span>
-  <span>₹${order.totalAmount + 5}</span>
+          <div class="invoice-totals">
+  <div class="inv-total-line">
+    <span>Subtotal</span>
+    <span>₹${order.totalAmount}</span>
+  </div>
+
+  ${(order.orderType === 'delivery' || order.orderType === 'takeaway') ? `
+    <div class="inv-total-line">
+      <span>Packaging Charge</span>
+      <span>₹5</span>
+    </div>
+  ` : ''}
+
+  <div class="inv-total-line grand-total">
+    <span>Grand Total</span>
+    <span>₹${order.totalAmount + ((order.orderType === 'delivery' || order.orderType === 'takeaway') ? 5 : 0)}</span>
+  </div>
 </div>
         </div>
         

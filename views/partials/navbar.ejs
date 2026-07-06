@@ -1,7 +1,17 @@
 <header class="app-header">
   <div class="nav-container">
     <div class="nav-brand">
-      <a href="/">
+      <a href="
+        <% if (typeof userRole !== 'undefined' && userRole) { %>
+          <% if (userRole === 'admin') { %>/admin/dashboard
+          <% } else if (userRole === 'waiter') { %>/waiter/dashboard
+          <% } else if (userRole === 'kitchen') { %>/kitchen/orders
+          <% } else if (userRole === 'cashier') { %>/cashier/orders
+          <% } %>
+        <% } else { %>
+          /
+        <% } %>
+      ">
         <i class="fa-solid fa-mug-hot"></i>
         <span>Besos de Café</span>
       </a>

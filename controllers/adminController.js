@@ -1,4 +1,5 @@
 import MenuItem from "../models/menuItemModel.js";
+import Order from "../models/orderModel.js";
 
 export function loadAddMenu(req, res) {
   res.render("admin/add-menu", { title: "Add Menu Item" });
@@ -94,5 +95,42 @@ export async function updateMenu(req, res) {
   } catch (error) {
     console.error("Error updating menu item:", error);
     res.status(500).send("Error updating menu item");
+  }
+}
+export async function loadDashboard(req, res) {
+  try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const paidOrders = await Order.find({
+      status: "paid",
+      paidAt: {
+        $gte: startOfDay,
+        $lte: endOfDay
+      }
+    });
+
+    let totalRevenue = 0;
+
+    paidOrders.forEach(order => {
+      totalRevenue += order.totalAmount;
+
+      // Add ₹5 packaging charge for takeaway and delivery
+      if (order.orderType === "takeaway" || order.orderType === "delivery") {
+        totalRevenue += 5;
+      }
+    });
+
+    res.render("admin/dashboard", {
+      title: "Admin Dashboard",
+      totalRevenue
+    });
+
+  } catch (error) {
+    console.error("Error loading dashboard:", error);
+    res.status(500).send("Error loading dashboard");
   }
 }

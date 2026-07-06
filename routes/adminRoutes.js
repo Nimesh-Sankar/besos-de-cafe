@@ -1,6 +1,7 @@
 import express from "express";
 import { requireRole } from "../middleware/auth.js";
 import {
+  loadDashboard,
   loadAddMenu,
   addMenu,
   loadMenuList,
@@ -13,7 +14,7 @@ const router = express.Router();
 
 // Protect all admin routes
 router.use(requireRole("admin"));
-
+router.get("/dashboard", loadDashboard);
 router.get("/add-menu", loadAddMenu);
 router.post("/add-menu", addMenu);
 router.get("/menu", loadMenuList);

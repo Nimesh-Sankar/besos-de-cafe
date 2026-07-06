@@ -20,7 +20,7 @@ router.post('/login', (req, res) => {
     req.session.role = role;
     
     // Redirect based on role
-    if (role === 'admin') return res.redirect('/admin/menu');
+    if (role === 'admin') return res.redirect('/admin/dashboard');
     if (role === 'waiter') return res.redirect('/waiter/dashboard');
     if (role === 'kitchen') return res.redirect('/kitchen/orders');
     if (role === 'cashier') return res.redirect('/cashier/orders');
