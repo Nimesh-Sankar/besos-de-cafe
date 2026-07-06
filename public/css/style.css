@@ -1052,527 +1052,190 @@ tr:last-child td {
   flex-direction: column;
 }
 
-.table-info .lbl {
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--text-muted);
-}
+/* ==========================================
+   MOBILE RESPONSIVE (Phones & Small Tablets)
+========================================== */
 
-.table-info .num {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--primary-color);
-  line-height: 1.1;
-}
+@media screen and (max-width:768px){
 
-.time-elapsed {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.ticket-body {
-  padding: 16px;
-  flex: 1;
-}
-
-.ticket-items-list {
-  list-style: none;
-}
-
-.ticket-items-list li {
-  padding: 8px 0;
-  border-bottom: 1px solid #FAF6F1;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-}
-
-.ticket-items-list li:last-child {
-  border-bottom: none;
-}
-
-.item-qty {
-  font-weight: 700;
-  font-size: 18px;
-  color: var(--primary-color);
-  background-color: var(--bg-color);
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
-}
-
-.item-name {
-  font-weight: 500;
-}
-
-.ticket-footer {
-  padding: 16px;
-  padding-bottom: 20px; /* offset the jagged bottom */
-  border-top: 1px dashed var(--border-color);
-}
-
-.status-badge-inline {
-  text-align: center;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px;
-  border-radius: 4px;
-  margin-bottom: 12px;
-  letter-spacing: 0.5px;
-}
-
-.status-badge-inline.status-pending { background-color: var(--info-light); color: var(--info-color); }
-.status-badge-inline.status-preparing { background-color: var(--warning-light); color: var(--warning-color); }
-
-/* Cashier POS Layout */
-.cashier-layout {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 30px;
-}
-
-@media (max-width: 992px) {
-  .cashier-layout {
-    grid-template-columns: 1fr;
+  .app-header{
+    padding:10px;
   }
-}
 
-.cashier-queue-card {
-  max-height: 75vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.cashier-queue-card h2 {
-  font-size: 18px;
-  color: var(--primary-color);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-}
-
-.billing-orders-list {
-  overflow-y: auto;
-  flex: 1;
-}
-
-.billing-item-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-sm);
-  margin-bottom: 12px;
-  cursor: pointer;
-  background-color: white;
-  transition: var(--transition);
-}
-
-.billing-item-row:hover {
-  border-color: var(--secondary-color);
-  transform: translateX(4px);
-}
-
-.billing-item-row.active {
-  border-color: var(--primary-color);
-  background-color: #FAF7F4;
-  box-shadow: var(--shadow-sm);
-}
-
-.bill-ready-checkout {
-  border-left: 4px solid var(--success-color);
-}
-
-.bill-row-left h3 {
-  font-size: 15px;
-  color: var(--primary-color);
-}
-
-.bill-time {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.bill-amount {
-  font-weight: 700;
-  color: var(--primary-color);
-  font-size: 16px;
-  margin-right: 10px;
-}
-
-.bill-row-right {
-  display: flex;
-  align-items: center;
-}
-
-.bill-row-right i {
-  color: var(--text-muted);
-}
-
-/* Cashier Invoice display */
-.cashier-invoice-card {
-  height: fit-content;
-  min-height: 400px;
-  display: flex;
-  flex-direction: column;
-}
-
-.cashier-invoice-card h2 {
-  font-size: 18px;
-  color: var(--primary-color);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 10px;
-  margin-bottom: 20px;
-}
-
-.invoice-placeholder {
-  text-align: center;
-  color: var(--text-muted);
-  padding: 80px 20px;
-}
-
-.invoice-placeholder i {
-  font-size: 50px;
-  color: var(--border-color);
-  margin-bottom: 15px;
-}
-
-/* Styled Paper Bill */
-.invoice-bill-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.invoice-paper {
-  background-color: #FFFDFB;
-  border: 1px solid #E6DFD5;
-  padding: 24px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
-  border-top: 4px solid var(--secondary-color);
-  font-size: 14px;
-}
-
-.invoice-brand {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.invoice-brand i {
-  font-size: 28px;
-  color: var(--primary-color);
-  margin-bottom: 6px;
-}
-
-.invoice-brand h3 {
-  font-size: 18px;
-  letter-spacing: 1px;
-}
-
-.invoice-brand p {
-  font-size: 11px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.invoice-meta {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 12px;
-  font-size: 12px;
-  margin-bottom: 15px;
-  color: #555;
-}
-
-.invoice-divider {
-  border-top: 1px dashed var(--border-color);
-  margin: 12px 0;
-}
-
-.invoice-items {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.inv-item-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.inv-item-desc {
-  display: flex;
-  flex-direction: column;
-}
-
-.inv-item-name {
-  font-weight: 500;
-}
-
-.inv-item-qty-price {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.inv-item-total {
-  font-weight: 600;
-}
-
-.invoice-totals {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.inv-total-line {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-}
-
-.inv-total-line.grand-total {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--primary-color);
-  margin-top: 6px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border-color);
-}
-
-.invoice-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 12px;
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.invoice-actions {
-  display: flex;
-  gap: 10px;
-}
-
-/* Footer layout */
-.app-footer {
-  background-color: var(--primary-color);
-  color: #FCFAF7;
-  padding: 20px;
-  text-align: center;
-  font-size: 13px;
-  margin-top: auto;
-  border-top: 1px solid var(--primary-hover);
-}
-
-.footer-content {
-  opacity: 0.8;
-}
-
-/* Responsive improvements */
-@media (max-width: 768px) {
-  .app-container {
-    padding: 15px 10px;
+  .nav-container{
+    flex-direction:column;
+    height:auto;
+    gap:12px;
+    padding:10px 0;
   }
-  
-  .content-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
+
+  .nav-menu{
+    width:100%;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:8px;
   }
-}
 
-/* Printable invoice helper styles */
-@media print {
-  body * {
-    visibility: hidden;
+  .nav-actions{
+    width:100%;
+    justify-content:center;
+    flex-wrap:wrap;
   }
-  
-  .invoice-paper, .invoice-paper * {
-    visibility: visible;
+
+  .content-header{
+    flex-direction:column;
+    align-items:flex-start;
   }
-  
-  .invoice-paper {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    border: none;
-    box-shadow: none;
+
+  .content-header h1{
+    font-size:22px;
   }
-  
-  .invoice-actions, .alert {
-    display: none !important;
+
+  .content-header .btn{
+    width:100%;
   }
+
+  /* Dashboard */
+
+  .dashboard-grid{
+    grid-template-columns:1fr;
+    gap:18px;
+  }
+
+  .order-card-header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:8px;
+  }
+
+  .order-card-footer{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:8px;
+  }
+
+  /* POS */
+
+  .menu-items-grid{
+    grid-template-columns:1fr;
+  }
+
+  .menu-item-pos-card{
+    min-height:auto;
+  }
+
+  .pos-container{
+    grid-template-columns:1fr;
+  }
+
+  .pos-cart-panel{
+    position:static;
+  }
+
+  /* Kitchen */
+
+  .kitchen-tickets-grid{
+    grid-template-columns:1fr;
+  }
+
+  .ticket-header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  /* Cashier */
+
+  .cashier-layout{
+    grid-template-columns:1fr;
+  }
+
+  .invoice-meta{
+    grid-template-columns:1fr;
+  }
+
+  .invoice-actions{
+    flex-direction:column;
+  }
+
+  .invoice-actions .btn{
+    width:100%;
+  }
+
+  /* Tables */
+
+  table{
+    min-width:650px;
+  }
+
+  .table-responsive{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* Forms */
+
+  .btn{
+    width:100%;
+  }
+
+  .btn-icon{
+    width:auto;
+  }
+
+  input,
+  select,
+  textarea{
+    font-size:16px;
+  }
+
+  .order-type-tabs{
+    flex-direction:column;
+  }
+
+  .type-badge-inline{
+    display:block;
+    margin:8px 0 0;
+  }
+
+  .toast-notification{
+    left:10px;
+    right:10px;
+    top:10px;
+    text-align:center;
+  }
+
 }
 
-/* Order Type Tabs Selector */
-.order-type-tabs {
-  display: flex;
-  background-color: #EFE8DE; /* Slightly darker cream tint for neutral contrast */
-  border-radius: var(--border-radius-sm);
-  padding: 4px;
-  gap: 4px;
-  margin-top: 10px;
-  margin-bottom: 15px;
-  border: 1px solid var(--border-color);
-}
 
-.order-type-tab {
-  flex: 1;
-  border: none;
-  background: none;
-  padding: 10px 15px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--primary-color);
-  cursor: pointer;
-  border-radius: 6px;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
+/* Very Small Phones */
 
-.order-type-tab:hover {
-  background-color: rgba(255, 255, 255, 0.4);
-}
+@media screen and (max-width:480px){
 
-.order-type-tab.active {
-  background-color: var(--primary-color);
-  color: white;
-  box-shadow: var(--shadow-sm);
-}
+  .login-card{
+    padding:24px 18px;
+  }
 
-.order-type-fields {
-  animation: fadeInOrderFields 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+  .card{
+    padding:16px;
+  }
 
-@keyframes fadeInOrderFields {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+  .content-header h1{
+    font-size:20px;
+  }
 
-/* Badge for order type */
-.type-badge {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 12px;
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
+  .table-info .num{
+    font-size:18px;
+  }
 
-.type-badge-inline {
-  margin-left: 10px;
-}
+  .item-qty{
+    width:24px;
+    height:24px;
+    font-size:15px;
+  }
 
-.type-dine-in {
-  background-color: rgba(140, 98, 57, 0.1);
-  color: var(--secondary-color);
-}
-.type-takeaway {
-  background-color: var(--success-light);
-  color: var(--success-color);
-}
-.type-delivery {
-  background-color: var(--info-light);
-  color: var(--info-color);
-}
+  .ticket-items-list li{
+    font-size:14px;
+  }
 
-/* Additional layout fixes for order cards displaying customer details */
-.order-customer-details {
-  background: rgba(92, 61, 46, 0.03);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 8px 12px;
-  margin-bottom: 12px;
-  font-size: 13px;
-  color: var(--text-dark);
-}
-
-.order-customer-details p {
-  margin-bottom: 4px;
-}
-
-.order-customer-details p:last-child {
-  margin-bottom: 0;
-}
-
-.order-customer-details i {
-  color: var(--secondary-color);
-  width: 16px;
-}
-.form-group textarea {
-  width: 100%;
-  min-height: 110px;
-  padding: 12px 15px;
-  border: 1px solid #d8d8d8;
-  border-radius: 12px;
-  font-size: 15px;
-  font-family: inherit;
-  resize: vertical;
-  outline: none;
-  background: #fff;
-  transition: all 0.3s ease;
-  box-sizing: border-box;
-}
-
-.form-group textarea:focus {
-  border-color: #6F4E37;
-  box-shadow: 0 0 0 4px rgba(111, 78, 55, 0.15);
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #444;
-}
-
-.form-group textarea::placeholder {
-  color: #9b9b9b;
-}
-.search-card{
-  margin-bottom:20px;
-}
-
-.search-input{
-  width:100%;
-  padding:12px 16px;
-  font-size:16px;
-  border-radius:10px;
-  border:1px solid #ddd;
-}
-.toast-notification{
-  position:fixed;
-  top:20px;
-  right:20px;
-  background:#4caf50;
-  color:white;
-  padding:15px 22px;
-  border-radius:10px;
-  font-weight:bold;
-  box-shadow:0 5px 15px rgba(0,0,0,.2);
-  opacity:0;
-  transform:translateY(-20px);
-  transition:.3s;
-  z-index:9999;
-}
-
-.toast-notification.show{
-  opacity:1;
-  transform:translateY(0);
 }

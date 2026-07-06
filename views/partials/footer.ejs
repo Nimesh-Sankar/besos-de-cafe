@@ -4,5 +4,12 @@
       <p>&copy; <%= new Date().getFullYear() %> Besos de Café. Crafted with passion & espresso.</p>
     </div>
   </footer>
+  <script>
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js")
+            .then(() => console.log("Service Worker Registered"))
+            .catch(err => console.error(err));
+    }
+    </script>
 </body>
 </html>
