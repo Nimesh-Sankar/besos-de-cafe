@@ -1,0 +1,45 @@
+<header class="app-header">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a href="/">
+        <i class="fa-solid fa-mug-hot"></i>
+        <span>Besos de Café</span>
+      </a>
+    </div>
+
+    <% if (typeof userRole !== 'undefined' && userRole) { %>
+      <nav class="nav-menu">
+        <!-- Role Specific Navigation Links -->
+        <% if (userRole === 'admin') { %>
+          <a href="/admin/menu" class="nav-link"><i class="fa-solid fa-list"></i> Menu List</a>
+          <a href="/admin/add-menu" class="nav-link"><i class="fa-solid fa-plus"></i> Add Item</a>
+          <a href="/waiter/dashboard" class="nav-link"><i class="fa-solid fa-user-tie"></i> Waiter view</a>
+          <a href="/kitchen/orders" class="nav-link"><i class="fa-solid fa-fire-burner"></i> Kitchen view</a>
+          <a href="/cashier/orders" class="nav-link"><i class="fa-solid fa-cash-register"></i> Cashier view</a>
+        <% } else if (userRole === 'waiter') { %>
+          <a href="/waiter/dashboard" class="nav-link"><i class="fa-solid fa-gauge"></i> Waiter Dashboard</a>
+          <a href="/waiter/order" class="nav-link"><i class="fa-solid fa-cart-plus"></i> Take Order</a>
+        <% } else if (userRole === 'kitchen') { %>
+          <a href="/kitchen/orders" class="nav-link"><i class="fa-solid fa-receipt"></i> Orders List</a>
+        <% } else if (userRole === 'cashier') { %>
+          <a href="/cashier/orders" class="nav-link"><i class="fa-solid fa-cash-register"></i> Checkout Dashboard</a>
+        <% } %>
+      </nav>
+
+      <div class="nav-actions">
+        <span class="role-badge role-<%= userRole %>">
+          <i class="fa-solid fa-user-shield"></i> <%= userRole.toUpperCase() %>
+        </span>
+        <a href="/auth/logout" class="btn-logout">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    <% } else { %>
+      <div class="nav-actions">
+        <span class="role-badge role-guest">
+          <i class="fa-solid fa-user-lock"></i> POS SYSTEM
+        </span>
+      </div>
+    <% } %>
+  </div>
+</header>

@@ -1,0 +1,130 @@
+<%- include('../partials/header') %>
+
+<div class="content-header">
+  <h1><i class="fa-solid fa-fire-burner"></i> Kitchen Orders Queue</h1>
+  <div class="refresh-indicator">
+    <i class="fa-solid fa-circle-notch fa-spin"></i> Active Monitoring
+  </div>
+</div>
+
+<% if (orders.length === 0) { %>
+  <div class="card empty-state-kitchen">
+    <i class="fa-solid fa-circle-check"></i>
+    <h2>All clear! No orders in queue.</h2>
+    <p>Enjoy the peaceful coffee aroma until the next order arrives.</p>
+  </div>
+<% } else { %>
+  <div class="kitchen-tickets-grid">
+    <% orders.forEach(function(order) { %>
+      <div class="kitchen-ticket status-ticket-<%= order.status %>">
+        <!-- Ticket Header -->
+        <div class="ticket-header">
+          <div class="table-info">
+            <% if (order.orderType === 'dine-in') { %>
+              <span class="lbl">TABLE</span>
+              <span class="num">#<%= order.tableNumber %></span>
+            <% } else if (order.orderType === 'takeaway') { %>
+              <span class="lbl">TAKEAWAY</span>
+              <span class="num" style="font-size: 13px; font-weight: 700; word-break: break-word;"><%= order.customerName %></span>
+            <% } else if (order.orderType === 'delivery') { %>
+              <span class="lbl">DELIVERY</span>
+              <span class="num" style="font-size: 13px; font-weight: 700; word-break: break-word;"><%= order.customerName %></span>
+            <% } else { %>
+              <span class="lbl">TABLE</span>
+              <span class="num">#<%= order.tableNumber %></span>
+            <% } %>
+          </div>
+          <div class="time-elapsed">
+            <i class="fa-regular fa-clock"></i>
+            <span class="timer" data-start="<%= order.createdAt %>">Calculating...</span>
+          </div>
+        </div>
+
+        <!-- Ticket Body -->
+        <div class="ticket-body">
+          <% if (order.orderType === 'takeaway') { %>
+            <div style="margin-bottom: 12px; padding: 6px; background-color: var(--success-light); color: var(--success-color); border-radius: 4px; font-size: 10px; font-weight: 800; text-align: center; border: 1px solid rgba(76, 124, 84, 0.15);">
+              <i class="fa-solid fa-bag-shopping"></i> PACK AS TAKEAWAY
+            </div>
+          <% } else if (order.orderType === 'delivery') { %>
+            <div style="margin-bottom: 12px; padding: 6px; background-color: var(--info-light); color: var(--info-color); border-radius: 4px; font-size: 10px; font-weight: 800; text-align: center; border: 1px solid rgba(75, 110, 140, 0.15);">
+              <i class="fa-solid fa-truck"></i> PACK FOR DELIVERY
+            </div>
+          <% } else { %>
+            <div style="margin-bottom: 12px; padding: 6px; background-color: rgba(140, 98, 57, 0.06); color: var(--secondary-color); border-radius: 4px; font-size: 10px; font-weight: 800; text-align: center; border: 1px solid rgba(140, 98, 57, 0.15);">
+              <i class="fa-solid fa-chair"></i> SERVE IN DINE-IN
+            </div>
+          <% } %>
+          <ul class="ticket-items-list">
+            <% order.items.forEach(function(item) { %>
+              <li>
+                <span class="item-qty"><%= item.quantity %></span>
+                <span class="item-name"><%= item.itemName %></span>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+
+        <!-- Ticket Status Badge -->
+        <div class="ticket-footer">
+          <div class="status-badge-inline status-<%= order.status %>">
+            STATUS: <%= order.status.toUpperCase() %>
+          </div>
+
+          <!-- Action buttons for status changes -->
+          <form action="/kitchen/order/status/<%= order._id %>" method="POST" class="ticket-action-form">
+            <% if (order.status === 'pending') { %>
+              <input type="hidden" name="nextStatus" value="preparing">
+              <button type="submit" class="btn btn-warning btn-block btn-sm">
+                <i class="fa-solid fa-kitchen-set"></i> Start Preparing
+              </button>
+            <% } else if (order.status === 'preparing') { %>
+              <input type="hidden" name="nextStatus" value="ready">
+              <button type="submit" class="btn btn-success btn-block btn-sm">
+                <i class="fa-solid fa-circle-check"></i> Ready to Serve
+              </button>
+            <% } %>
+          </form>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
+
+<script>
+  function updateTimers() {
+    const timers = document.querySelectorAll('.timer');
+    timers.forEach(timer => {
+      const startTime = new Date(timer.dataset.start);
+      const now = new Date();
+      const diffMs = now - startTime;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffSecs = Math.floor((diffMs % 60000) / 1000);
+      
+      let text = '';
+      if (diffMins > 0) {
+        text += `${diffMins}m `;
+      }
+      text += `${diffSecs}s ago`;
+      timer.innerText = text;
+      
+      // Highlight ticket if order is older than 10 minutes
+      const ticket = timer.closest('.kitchen-ticket');
+      if (diffMins >= 10) {
+        ticket.classList.add('ticket-delayed');
+      }
+    });
+  }
+
+  // Initial update
+  updateTimers();
+  // Update every second
+  setInterval(updateTimers, 1000);
+  
+  // Auto-refresh the kitchen view every 15 seconds to pull new orders without manual page reload
+  setInterval(() => {
+    window.location.reload();
+  }, 15000);
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,119 @@
+<%- include('../partials/header') %>
+
+<div class="content-header">
+  <h1><i class="fa-solid fa-gauge"></i> Waiter Control Panel</h1>
+  <a href="/waiter/order" class="btn btn-primary"><i class="fa-solid fa-cart-plus"></i> Take New Order</a>
+</div>
+
+<div class="dashboard-grid">
+  <!-- Ready to Serve Section -->
+  <div class="card card-alert">
+    <h2><i class="fa-solid fa-bell-concierge bell-ready"></i> Ready to Serve</h2>
+    <% 
+      const readyOrders = orders.filter(o => o.status === 'ready'); 
+      if (readyOrders.length === 0) { 
+    %>
+      <div class="empty-section">
+        <p>No orders are currently waiting to be served.</p>
+      </div>
+    <% } else { %>
+      <div class="orders-list">
+        <% readyOrders.forEach(order => { %>
+          <div class="order-item-card status-card-ready" data-order-id="<%= order._id %>">
+            <div class="order-card-header">
+              <% if (order.orderType === 'dine-in') { %>
+                <h3>Table #<%= order.tableNumber %> <span class="type-badge type-dine-in type-badge-inline"><i class="fa-solid fa-chair"></i> Dine-In</span></h3>
+              <% } else if (order.orderType === 'takeaway') { %>
+                <h3>Takeaway <span class="type-badge type-takeaway type-badge-inline"><i class="fa-solid fa-bag-shopping"></i> Takeaway</span></h3>
+              <% } else if (order.orderType === 'delivery') { %>
+                <h3>Delivery <span class="type-badge type-delivery type-badge-inline"><i class="fa-solid fa-truck"></i> Delivery</span></h3>
+              <% } else { %>
+                <h3>Table #<%= order.tableNumber %></h3>
+              <% } %>
+              <span class="pulse-badge">READY</span>
+            </div>
+            <% if (order.orderType && order.orderType !== 'dine-in') { %>
+              <div class="order-customer-details">
+                <p><i class="fa-solid fa-user"></i> <strong><%= order.customerName %></strong></p>
+                <% if (order.customerPhone) { %>
+                  <p><i class="fa-solid fa-phone"></i> <%= order.customerPhone %></p>
+                <% } %>
+                <% if (order.orderType === 'delivery' && order.deliveryAddress) { %>
+                  <p><i class="fa-solid fa-map-location-dot"></i> <%= order.deliveryAddress %></p>
+                <% } %>
+              </div>
+            <% } %>
+            <ul class="order-items-list">
+              <% order.items.forEach(item => { %>
+                <li><%= item.itemName %> <span class="qty">&times; <%= item.quantity %></span></li>
+              <% }) %>
+            </ul>
+            <div class="order-card-actions">
+              <form action="/waiter/order/serve/<%= order._id %>" method="POST">
+                <button type="submit" class="btn btn-success btn-sm btn-block">
+                  <i class="fa-solid fa-check"></i> Mark as Served
+                </button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Other Active Orders -->
+  <div class="card card-standard">
+    <h2><i class="fa-solid fa-hourglass-half"></i> In-Progress & Billing</h2>
+    <% 
+      const activeOrders = orders.filter(o => o.status !== 'ready'); 
+      if (activeOrders.length === 0) { 
+    %>
+      <div class="empty-section">
+        <p>No other active orders.</p>
+      </div>
+    <% } else { %>
+      <div class="orders-list">
+        <% activeOrders.forEach(order => { %>
+          <div class="order-item-card status-card-<%= order.status %>" data-order-id="<%= order._id %>">
+            <div class="order-card-header">
+              <% if (order.orderType === 'dine-in') { %>
+                <h3>Table #<%= order.tableNumber %> <span class="type-badge type-dine-in type-badge-inline"><i class="fa-solid fa-chair"></i> Dine-In</span></h3>
+              <% } else if (order.orderType === 'takeaway') { %>
+                <h3>Takeaway <span class="type-badge type-takeaway type-badge-inline"><i class="fa-solid fa-bag-shopping"></i> Takeaway</span></h3>
+              <% } else if (order.orderType === 'delivery') { %>
+                <h3>Delivery <span class="type-badge type-delivery type-badge-inline"><i class="fa-solid fa-truck"></i> Delivery</span></h3>
+              <% } else { %>
+                <h3>Table #<%= order.tableNumber %></h3>
+              <% } %>
+              <span class="status-indicator indicator-<%= order.status %>">
+                <%= order.status.toUpperCase() %>
+              </span>
+            </div>
+            <% if (order.orderType && order.orderType !== 'dine-in') { %>
+              <div class="order-customer-details">
+                <p><i class="fa-solid fa-user"></i> <strong><%= order.customerName %></strong></p>
+                <% if (order.customerPhone) { %>
+                  <p><i class="fa-solid fa-phone"></i> <%= order.customerPhone %></p>
+                <% } %>
+                <% if (order.orderType === 'delivery' && order.deliveryAddress) { %>
+                  <p><i class="fa-solid fa-map-location-dot"></i> <%= order.deliveryAddress %></p>
+                <% } %>
+              </div>
+            <% } %>
+            <ul class="order-items-list">
+              <% order.items.forEach(item => { %>
+                <li><%= item.itemName %> <span class="qty">&times; <%= item.quantity %></span></li>
+              <% }) %>
+            </ul>
+            <div class="order-card-footer">
+              <span class="total-price">Total: ₹<%= order.totalAmount %></span>
+              <span class="order-time"><i class="fa-regular fa-clock"></i> <%= new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %></span>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

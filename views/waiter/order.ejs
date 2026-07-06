@@ -1,0 +1,262 @@
+<%- include('../partials/header') %>
+
+<div class="content-header">
+  <h1><i class="fa-solid fa-cart-plus"></i> New Order</h1>
+  <a href="/waiter/dashboard" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+</div>
+
+<form action="/waiter/order" method="POST" class="pos-order-form">
+  <div class="pos-container">
+    <!-- Left Panel: Menu Items -->
+    <div class="pos-menu-panel">
+      <!-- Order Type Selection -->
+      <div class="card table-selector-card">
+        <label><i class="fa-solid fa-receipt"></i> Select Order Type</label>
+        
+        <div class="order-type-tabs">
+          <button type="button" class="order-type-tab active" data-type="dine-in" onclick="setOrderType('dine-in')">
+            <i class="fa-solid fa-chair"></i> Dine-In
+          </button>
+          <button type="button" class="order-type-tab" data-type="takeaway" onclick="setOrderType('takeaway')">
+            <i class="fa-solid fa-bag-shopping"></i> Takeaway
+          </button>
+          <button type="button" class="order-type-tab" data-type="delivery" onclick="setOrderType('delivery')">
+            <i class="fa-solid fa-truck"></i> Delivery
+          </button>
+        </div>
+        
+        <input type="hidden" name="orderType" id="orderTypeInput" value="dine-in">
+
+        <!-- Dine-in fields -->
+        <div id="dine-in-fields" class="order-type-fields">
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="tableNumber"><i class="fa-solid fa-chair"></i> Assign Table Number</label>
+            <input type="number" id="tableNumber" name="tableNumber" min="1" max="100" placeholder="e.g. 5" required>
+          </div>
+        </div>
+
+        <!-- Takeaway fields -->
+        <div id="takeaway-fields" class="order-type-fields" style="display: none;">
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="customerNameTakeaway"><i class="fa-solid fa-user"></i> Customer Name</label>
+            <input type="text" id="customerNameTakeaway" name="customerName" placeholder="e.g. John Doe" disabled>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="customerPhoneTakeaway"><i class="fa-solid fa-phone"></i> Customer Phone (Optional)</label>
+            <input type="text" id="customerPhoneTakeaway" name="customerPhone" placeholder="e.g. 9876543210" disabled>
+          </div>
+        </div>
+
+        <!-- Delivery fields -->
+        <div id="delivery-fields" class="order-type-fields" style="display: none;">
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="customerNameDelivery"><i class="fa-solid fa-user"></i> Customer Name</label>
+            <input type="text" id="customerNameDelivery" name="customerName" placeholder="e.g. Alice Smith" disabled>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="customerPhoneDelivery"><i class="fa-solid fa-phone"></i> Customer Phone</label>
+            <input type="text" id="customerPhoneDelivery" name="customerPhone" placeholder="e.g. 9876543210" disabled>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="deliveryAddress"><i class="fa-solid fa-map-location-dot"></i> Delivery Address</label>
+            <textarea id="deliveryAddress" name="deliveryAddress" placeholder="e.g. Flat 102, Coffee Heights, Espresso Lane" rows="3" disabled></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories Section -->
+      <% 
+        const categories = [...new Set(menuItems.map(item => item.category))]; 
+        categories.forEach(category => {
+          const items = menuItems.filter(i => i.category === category);
+      %>
+        <div class="menu-category-section">
+          <h2><i class="fa-solid fa-mug-hot"></i> <%= category %></h2>
+          <div class="menu-items-grid">
+            <% items.forEach(item => { %>
+              <div class="menu-item-pos-card" id="card-<%= item._id %>">
+                <div class="card-details">
+                  <h3><%= item.name %></h3>
+                  <p class="price">₹<%= item.price %></p>
+                </div>
+                
+                <input type="hidden" name="menuItemId" value="<%= item._id %>">
+                
+                <div class="quantity-controller">
+                  <button type="button" class="qty-btn btn-minus" onclick="adjustQty('<%= item._id %>', -1, <%= item.price %>)">
+                    <i class="fa-solid fa-minus"></i>
+                  </button>
+                  <input type="number" name="quantity" id="qty-<%= item._id %>" min="0" value="0" readonly data-price="<%= item.price %>" class="qty-input">
+                  <button type="button" class="qty-btn btn-plus" onclick="adjustQty('<%= item._id %>', 1, <%= item.price %>)">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- Right Panel: Order Cart Sidebar -->
+    <div class="pos-cart-panel">
+      <div class="card cart-card">
+        <h2><i class="fa-solid fa-shopping-basket"></i> Order Ticket</h2>
+        
+        <div class="cart-items-summary" id="cart-summary">
+          <p class="empty-cart-msg">No items selected. Tap items to add to ticket.</p>
+        </div>
+
+        <div class="cart-totals">
+          <div class="total-row">
+            <span>Subtotal</span>
+            <span id="subtotal-val">₹0</span>
+          </div>
+          <div class="total-row total-grand">
+            <span>Grand Total</span>
+            <span id="grandtotal-val">₹0</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-place-order" id="btn-submit" disabled>
+          <i class="fa-solid fa-paper-plane"></i> Send Ticket to Kitchen
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  function adjustQty(itemId, change, price) {
+    const input = document.getElementById(`qty-${itemId}`);
+    const card = document.getElementById(`card-${itemId}`);
+    let val = parseInt(input.value) + change;
+    if (val < 0) val = 0;
+    
+    input.value = val;
+
+    // Toggle active card styling
+    if (val > 0) {
+      card.classList.add('selected');
+    } else {
+      card.classList.remove('selected');
+    }
+
+    calculateTotal();
+  }
+
+  function calculateTotal() {
+    let total = 0;
+    let selectedCount = 0;
+    const summaryContainer = document.getElementById('cart-summary');
+    summaryContainer.innerHTML = ''; // Clear prior summary
+
+    const qtyInputs = document.querySelectorAll('.qty-input');
+    qtyInputs.forEach(input => {
+      const qty = parseInt(input.value);
+      if (qty > 0) {
+        selectedCount++;
+        const price = parseFloat(input.dataset.price);
+        const cardId = input.id.replace('qty-', 'card-');
+        const itemName = document.querySelector(`#${cardId} h3`).innerText;
+        total += qty * price;
+
+        // Add to sidebar ticket view
+        const ticketItem = document.createElement('div');
+        ticketItem.className = 'ticket-item';
+        ticketItem.innerHTML = `
+          <span class="ticket-name">${itemName}</span>
+          <span class="ticket-qty">x${qty}</span>
+          <span class="ticket-price">₹${qty * price}</span>
+        `;
+        summaryContainer.appendChild(ticketItem);
+      }
+    });
+
+    if (selectedCount === 0) {
+      summaryContainer.innerHTML = '<p class="empty-cart-msg">No items selected. Tap items to add to ticket.</p>';
+      document.getElementById('btn-submit').disabled = true;
+    } else {
+      document.getElementById('btn-submit').disabled = false;
+    }
+
+    document.getElementById('subtotal-val').innerText = '₹' + total;
+    document.getElementById('grandtotal-val').innerText = '₹' + total;
+  }
+
+  function setOrderType(type) {
+    // Update active tab button style
+    document.querySelectorAll('.order-type-tab').forEach(btn => {
+      if (btn.dataset.type === type) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    // Update hidden input value
+    document.getElementById('orderTypeInput').value = type;
+
+    // Toggle fields visibility
+    document.getElementById('dine-in-fields').style.display = type === 'dine-in' ? 'block' : 'none';
+    document.getElementById('takeaway-fields').style.display = type === 'takeaway' ? 'block' : 'none';
+    document.getElementById('delivery-fields').style.display = type === 'delivery' ? 'block' : 'none';
+
+    // Get input elements
+    const tableNumberInput = document.getElementById('tableNumber');
+    const customerNameTakeaway = document.getElementById('customerNameTakeaway');
+    const customerPhoneTakeaway = document.getElementById('customerPhoneTakeaway');
+    const customerNameDelivery = document.getElementById('customerNameDelivery');
+    const customerPhoneDelivery = document.getElementById('customerPhoneDelivery');
+    const deliveryAddress = document.getElementById('deliveryAddress');
+
+    if (type === 'dine-in') {
+      tableNumberInput.disabled = false;
+      tableNumberInput.required = true;
+
+      customerNameTakeaway.disabled = true;
+      customerNameTakeaway.required = false;
+      customerPhoneTakeaway.disabled = true;
+      customerPhoneTakeaway.required = false;
+
+      customerNameDelivery.disabled = true;
+      customerNameDelivery.required = false;
+      customerPhoneDelivery.disabled = true;
+      customerPhoneDelivery.required = false;
+      deliveryAddress.disabled = true;
+      deliveryAddress.required = false;
+    } else if (type === 'takeaway') {
+      tableNumberInput.disabled = true;
+      tableNumberInput.required = false;
+
+      customerNameTakeaway.disabled = false;
+      customerNameTakeaway.required = true;
+      customerPhoneTakeaway.disabled = false;
+      customerPhoneTakeaway.required = false;
+
+      customerNameDelivery.disabled = true;
+      customerNameDelivery.required = false;
+      customerPhoneDelivery.disabled = true;
+      customerPhoneDelivery.required = false;
+      deliveryAddress.disabled = true;
+      deliveryAddress.required = false;
+    } else if (type === 'delivery') {
+      tableNumberInput.disabled = true;
+      tableNumberInput.required = false;
+
+      customerNameTakeaway.disabled = true;
+      customerNameTakeaway.required = false;
+      customerPhoneTakeaway.disabled = true;
+      customerPhoneTakeaway.required = false;
+
+      customerNameDelivery.disabled = false;
+      customerNameDelivery.required = true;
+      customerPhoneDelivery.disabled = false;
+      customerPhoneDelivery.required = true;
+      deliveryAddress.disabled = false;
+      deliveryAddress.required = true;
+    }
+  }
+</script>
+
+<%- include('../partials/footer') %>

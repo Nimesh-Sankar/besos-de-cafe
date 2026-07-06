@@ -1,0 +1,182 @@
+<%- include('../partials/header') %>
+
+<div class="content-header">
+  <h1><i class="fa-solid fa-cash-register"></i> Cashier POS Checkout</h1>
+</div>
+
+<div class="cashier-layout">
+  <!-- Unpaid Orders Queue -->
+  <div class="card cashier-queue-card">
+    <h2><i class="fa-solid fa-list"></i> Unpaid Bills</h2>
+    <% if (orders.length === 0) { %>
+      <div class="empty-state">
+        <i class="fa-solid fa-receipt"></i>
+        <p>No active unpaid bills in the system.</p>
+      </div>
+    <% } else { %>
+      <script>
+        const activeOrdersMap = {};
+      </script>
+      <div class="billing-orders-list">
+        <% orders.forEach(function(order) { %>
+          <script>
+            activeOrdersMap["<%= order._id %>"] = <%- JSON.stringify(order) %>;
+          </script>
+          <div class="billing-item-row <%= order.status === 'served' ? 'bill-ready-checkout' : '' %>" onclick="selectOrder('<%= order._id %>')">
+            <div class="bill-row-left">
+              <% if (order.orderType === 'dine-in') { %>
+                <h3>Table #<%= order.tableNumber %> <span class="type-badge type-dine-in" style="font-size: 9px; padding: 2px 6px;"><i class="fa-solid fa-chair"></i> Dine-In</span></h3>
+              <% } else if (order.orderType === 'takeaway') { %>
+                <h3><%= order.customerName %> <span class="type-badge type-takeaway" style="font-size: 9px; padding: 2px 6px;"><i class="fa-solid fa-bag-shopping"></i> Takeaway</span></h3>
+              <% } else if (order.orderType === 'delivery') { %>
+                <h3><%= order.customerName %> <span class="type-badge type-delivery" style="font-size: 9px; padding: 2px 6px;"><i class="fa-solid fa-truck"></i> Delivery</span></h3>
+              <% } else { %>
+                <h3>Table #<%= order.tableNumber %></h3>
+              <% } %>
+              <span class="bill-time"><i class="fa-regular fa-clock"></i> <%= new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %></span>
+            </div>
+            <div class="bill-row-mid">
+              <span class="status-badge status-<%= order.status %>"><%= order.status.toUpperCase() %></span>
+            </div>
+            <div class="bill-row-right">
+              <span class="bill-amount">₹<%= order.totalAmount %></span>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Interactive Invoice Display (Right Sidebar) -->
+  <div class="card cashier-invoice-card">
+    <h2><i class="fa-solid fa-file-invoice-dollar"></i> Bill Invoice Preview</h2>
+    
+    <div id="invoice-details" class="invoice-empty">
+      <div class="invoice-placeholder">
+        <i class="fa-solid fa-receipt"></i>
+        <p>Select an active billing order from the list to preview and settle the invoice.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function selectOrder(orderId) {
+    const order = activeOrdersMap[orderId];
+    const container = document.getElementById('invoice-details');
+    
+    // Highlight selected row in left panel
+    document.querySelectorAll('.billing-item-row').forEach(row => {
+      row.classList.remove('active');
+    });
+    // Find clicked row (simple implementation: we'll match by ID)
+    event.currentTarget.classList.add('active');
+
+    // Build items list HTML
+    let itemsHtml = '';
+    order.items.forEach(item => {
+      itemsHtml += `
+        <div class="inv-item-row">
+          <div class="inv-item-desc">
+            <span class="inv-item-name">${item.itemName}</span>
+            <span class="inv-item-qty-price">${item.quantity} x ₹${item.price}</span>
+          </div>
+          <span class="inv-item-total">₹${item.quantity * item.price}</span>
+        </div>
+      `;
+    });
+
+    const isServed = order.status === 'served';
+    
+    let diningStatusMessage = '';
+    if (order.orderType === 'dine-in' || !order.orderType) {
+      diningStatusMessage = isServed ? '' : `
+        <div class="alert alert-warning-pos">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Notice: Customers are still dining (Status: ${order.status.toUpperCase()}). Confirm early checkout if requested.</span>
+        </div>
+      `;
+    } else {
+      diningStatusMessage = isServed ? '' : `
+        <div class="alert alert-warning-pos">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Notice: Order status is ${order.status.toUpperCase()} (not served yet). Confirm early checkout if requested.</span>
+        </div>
+      `;
+    }
+
+    // Build meta details dynamically
+    let metaHtml = `
+      <div><strong>Type:</strong> ${order.orderType ? order.orderType.toUpperCase() : 'DINE-IN'}</div>
+      <div><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</div>
+      <div><strong>Time:</strong> ${new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+      <div><strong>Bill ID:</strong> ${order._id.substring(18)}</div>
+    `;
+
+    if (order.orderType === 'dine-in' || !order.orderType) {
+      metaHtml += `<div><strong>Table:</strong> #${order.tableNumber}</div>`;
+    } else {
+      metaHtml += `<div><strong>Customer:</strong> ${order.customerName}</div>`;
+      if (order.customerPhone) {
+        metaHtml += `<div><strong>Phone:</strong> ${order.customerPhone}</div>`;
+      }
+      if (order.orderType === 'delivery' && order.deliveryAddress) {
+        metaHtml += `<div style="grid-column: span 2;"><strong>Address:</strong> ${order.deliveryAddress}</div>`;
+      }
+    }
+
+    container.className = 'invoice-bill-container';
+    container.innerHTML = `
+      <div class="invoice-paper">
+        <div class="invoice-brand">
+          <i class="fa-solid fa-mug-hot"></i>
+          <h3>BESOS DE CAFÉ</h3>
+          <p>Cafe & Espresso Bistro</p>
+        </div>
+        
+        <div class="invoice-meta">
+          ${metaHtml}
+        </div>
+
+        <div class="invoice-divider"></div>
+
+        <div class="invoice-items">
+          ${itemsHtml}
+        </div>
+
+        <div class="invoice-divider"></div>
+
+        <div class="invoice-totals">
+          <div class="inv-total-line">
+            <span>Subtotal</span>
+            <span>₹${order.totalAmount}</span>
+          </div>
+          <div class="inv-total-line">
+            <span>GST (5%)</span>
+            <span>₹${Math.round(order.totalAmount * 0.05)}</span>
+          </div>
+          <div class="inv-total-line grand-total">
+            <span>Grand Total (Net)</span>
+            <span>₹${Math.round(order.totalAmount * 1.05)}</span>
+          </div>
+        </div>
+        
+        <div class="invoice-footer">
+          <p>Thank you for visiting Besos de Café!</p>
+        </div>
+      </div>
+
+      ${diningStatusMessage}
+
+      <div class="invoice-actions">
+        <button class="btn btn-secondary btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Receipt</button>
+        <form action="/cashier/order/pay/${order._id}" method="POST" class="inline-form">
+          <button type="submit" class="btn btn-success btn-block"><i class="fa-solid fa-wallet"></i> Process Payment & Settle</button>
+        </form>
+      </div>
+    `;
+  }
+</script>
+
+<%- include('../partials/footer') %>
