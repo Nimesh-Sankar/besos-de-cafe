@@ -90,8 +90,10 @@
     <% }) %>
   </div>
 <% } %>
-
+<script src="/socket.io/socket.io.js"></script>
 <script>
+  const socket = io();
+  const notification = new Audio("/sounds/notification.mp3");
   function updateTimers() {
     const timers = document.querySelectorAll('.timer');
     timers.forEach(timer => {
@@ -121,10 +123,15 @@
   // Update every second
   setInterval(updateTimers, 1000);
   
-  // Auto-refresh the kitchen view every 15 seconds to pull new orders without manual page reload
-  setInterval(() => {
+  socket.on("new-order", () => {
+
+notification.play().catch(() => {});
+
+setTimeout(() => {
     window.location.reload();
-  }, 15000);
+}, 300);
+
+});
 </script>
 
 <%- include('../partials/footer') %>

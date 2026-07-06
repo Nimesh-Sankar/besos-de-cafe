@@ -21,7 +21,7 @@ export async function loadKitchenOrders(req, res) {
 export async function updateOrderStatus(req, res) {
   try {
     const orderId = req.params.id;
-    const { nextStatus } = req.body; // e.g. "preparing" or "ready"
+    const { nextStatus } = req.body;
 
     if (!["preparing", "ready"].includes(nextStatus)) {
       return res.status(400).send("Invalid status transition for the kitchen");
@@ -34,6 +34,11 @@ export async function updateOrderStatus(req, res) {
 
     order.status = nextStatus;
     await order.save();
+
+    // ===== Socket.IO =====
+    const io = req.app.get("io");
+    io.emit("order-status-updated", order);
+    // =====================
 
     res.redirect("/kitchen/orders");
   } catch (error) {

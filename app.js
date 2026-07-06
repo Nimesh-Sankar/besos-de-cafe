@@ -4,6 +4,11 @@ import session from 'express-session';
 import path from 'path';
 import connectDB from './config/db.js';
 
+// ===== Socket.IO Imports =====
+import http from 'http';
+import { Server } from 'socket.io';
+// =============================
+
 // Route imports
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
@@ -15,6 +20,14 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+// ===== Create HTTP Server =====
+const server = http.createServer(app);
+
+const io = new Server(server);
+
+app.set("io", io);
+// ==============================
 
 // View engine setup
 app.set("view engine", "ejs");
@@ -65,6 +78,9 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on  http://localhost:${PORT}`);
+
+// ===== Start HTTP Server =====
+server.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
+// =============================

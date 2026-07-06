@@ -86,18 +86,23 @@ export async function createOrder(req, res) {
       return res.status(400).send("Cannot place an empty order. Please specify quantities for at least one item.");
     }
 
-    await Order.create({
-      orderType: type,
-      tableNumber: tableNum,
-      customerName: type !== "dine-in" ? customerName : undefined,
-      customerPhone: type !== "dine-in" ? customerPhone : undefined,
-      deliveryAddress: type === "delivery" ? deliveryAddress : undefined,
-      items,
-      totalAmount,
-      status: "pending"
-    });
+const order = await Order.create({
+  orderType: type,
+  tableNumber: tableNum,
+  customerName: type !== "dine-in" ? customerName : undefined,
+  customerPhone: type !== "dine-in" ? customerPhone : undefined,
+  deliveryAddress: type === "delivery" ? deliveryAddress : undefined,
+  items,
+  totalAmount,
+  status: "pending"
+});
 
-    res.redirect("/waiter/dashboard");
+// ===== Socket.IO =====
+const io = req.app.get("io");
+io.emit("new-order", order);
+// =====================
+
+res.redirect("/waiter/dashboard");
   } catch (error) {
     console.error("Error creating order:", error);
     res.status(500).send("Error placing the order");

@@ -63,6 +63,16 @@
           </div>
         </div>
       </div>
+      <div class="card search-card">
+        <div class="form-group">
+          <input
+            type="text"
+            id="menuSearch"
+            placeholder="🔍 Search menu..."
+            class="search-input"
+          >
+        </div>
+      </div>
 
       <!-- Categories Section -->
       <% 
@@ -74,7 +84,12 @@
           <h2><i class="fa-solid fa-mug-hot"></i> <%= category %></h2>
           <div class="menu-items-grid">
             <% items.forEach(item => { %>
-              <div class="menu-item-pos-card" id="card-<%= item._id %>">
+              <div
+  class="menu-item-pos-card"
+  id="card-<%= item._id %>"
+  data-name="<%= item.name.toLowerCase() %>"
+  data-category="<%= item.category.toLowerCase() %>"
+>
                 <div class="card-details">
                   <h3><%= item.name %></h3>
                   <p class="price">₹<%= item.price %></p>
@@ -257,6 +272,25 @@
       deliveryAddress.required = true;
     }
   }
+  const searchInput = document.getElementById("menuSearch");
+
+searchInput.addEventListener("input", function () {
+
+    const value = this.value.toLowerCase();
+
+    document.querySelectorAll(".menu-item-pos-card").forEach(card => {
+
+        const name = card.dataset.name;
+
+        if (name.includes(value)) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
+        }
+
+    });
+
+});
 </script>
 
 <%- include('../partials/footer') %>

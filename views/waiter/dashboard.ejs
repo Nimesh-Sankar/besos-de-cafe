@@ -116,4 +116,38 @@
   </div>
 </div>
 
+<div id="toast" class="toast-notification">
+    <span id="toastMessage"></span>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+const notification = new Audio("/sounds/notification.mp3");
+
+socket.on("order-status-updated", (order) => {
+
+    if (order.status !== "ready") return;
+
+    notification.play().catch(() => {});
+
+    const message =
+        order.orderType === "dine-in"
+        ? `🔔 Table ${order.tableNumber} is ready to serve!`
+        : `🔔 ${order.customerName}'s order is ready!`;
+
+    const toast = document.getElementById("toast");
+    document.getElementById("toastMessage").innerText = message;
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        window.location.reload();
+    }, 3000);
+
+});
+</script>
+
 <%- include('../partials/footer') %>
