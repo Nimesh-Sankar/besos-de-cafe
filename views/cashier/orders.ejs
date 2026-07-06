@@ -153,13 +153,13 @@
             <span>₹${order.totalAmount}</span>
           </div>
           <div class="inv-total-line">
-            <span>GST (5%)</span>
-            <span>₹${Math.round(order.totalAmount * 0.05)}</span>
-          </div>
-          <div class="inv-total-line grand-total">
-            <span>Grand Total (Net)</span>
-            <span>₹${Math.round(order.totalAmount * 1.05)}</span>
-          </div>
+  <span>Service Charge</span>
+  <span>₹5</span>
+</div>
+<div class="inv-total-line grand-total">
+  <span>Grand Total</span>
+  <span>₹${order.totalAmount + 5}</span>
+</div>
         </div>
         
         <div class="invoice-footer">
